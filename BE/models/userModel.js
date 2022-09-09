@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import bcrypt from "bcryptjs"
 
-// orm, maps data into object, what conditions:
+// orm -> Object Relation Mapper, maps data into object/class, what conditions: see below
 const userSchema = mongoose.Schema(
     {
         username: {

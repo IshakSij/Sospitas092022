@@ -9,7 +9,7 @@ import bodyParser from "body-parser"
 import * as useragent from "express-useragent"
 import path from 'path'
 
-
+// The app.use() function adds a new middleware to the app. Essentially, whenever a request hits your backend, Express will execute the functions you passed to app.use() in order.
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -27,9 +27,11 @@ app.use(useragent.express());
 
 await connectDB()
 
+// these are the required multiple services for things
 // routing
-// in xprs - rec-res needed
+// tell xprs, what function to do with what route - rec-res needed
 app.get("/", (req, res) => {
+    // open this file on FE, show it to client
     res.sendFile(path.resolve(path.join(process.cwd(), '/FE/index.html')));
 })
 

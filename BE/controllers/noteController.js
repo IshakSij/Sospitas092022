@@ -1,6 +1,6 @@
 import User from '../models/userModel.js'
 
-// takes from body data needed
+// takes from body data needed, username, title, content
 export const addNewNote = async (req, res) => {
     const {username, title, content} = req.body
 
@@ -10,10 +10,11 @@ export const addNewNote = async (req, res) => {
     }
     const user = await User.findOne({username})
 
+    // timestamp generated when note made, so we can identify it
     if (user) {
         const note = {title, content, timestamp: Date.now()}
 
-        // decompose operator, returns single elements
+        // decompose operator, returns single elements, instead of sequence, sends every element individually
         user.notes = [...user.notes, note]
         user.save()
         res.status(200).json({notes: user.notes})
@@ -22,7 +23,7 @@ export const addNewNote = async (req, res) => {
     }
 }
 
-// checks user, which note, new things
+// checks user, which note identified by timestamp, new things
 export const updateNote = async (req, res) => {
     const {username, timestamp, title, content} = req.body
 
@@ -32,7 +33,7 @@ export const updateNote = async (req, res) => {
     let user = await User.findOne({username})
 
     if (user) {
-        // mongo, find user, update when: filter, find user, ident timestamp
+        // mongo magic, find user, update when: filter, find user, ident timestamp, if matching, update with data from body
         const updateResult = await User.findOneAndUpdate(
             {username, "notes.timestamp": parseInt(timestamp)},
             {$set: {'notes.$.title': title, 'notes.$.content': content}}
@@ -44,6 +45,7 @@ export const updateNote = async (req, res) => {
     }
 }
 
+// return note if all identifiers matching
 export const getUserNotes = async (req, res) => {
     const {username} = req.params
     if (!username) {
@@ -52,7 +54,7 @@ export const getUserNotes = async (req, res) => {
     }
     const user = await User.findOne({username: username})
     if (user) {
-        res.status(200).json({notes: user.notes ? user.notes : []})
+        res.status(200).json({notes: user.notes ? user.notes : []}) // if empty, send empty array
     } else {
         res.status(400).json({error: "User does not exist"})
     }

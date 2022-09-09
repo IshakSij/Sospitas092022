@@ -3,7 +3,7 @@ import {
     login, register, logout
 } from "../controllers/authenticationController.js"
 import validateToken from "../middleware/validateToken.js";
-// create router, only post request
+// create router, only post request possible, what route...
 const router = express.Router()
 
 router.post("/login", login)

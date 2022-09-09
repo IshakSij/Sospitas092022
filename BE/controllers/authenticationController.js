@@ -4,16 +4,19 @@ import generateToken from '../utils/generateToken.js'
 // with req, res
 export const login = async (req, res) => {
     const {username, password} = req.body
-    const user = await User.findOne({username: username})
+    const user = await User.findOne({username: username}) // find matching user in base
 
     if (!user) {
+        // usually in REST sends success, message and needed data
         res.status(401).json({
             success: false,
             user: null,
             message: 'No user with given username found!'
-        }).end()
+        }).end() // best practice
         return
     }
+
+    // password is kept in base as a hash
     const isPasswordTrue = await user.matchPassword(password)
     if (isPasswordTrue) {
         const {error, token} = await generateToken(user.username);
@@ -26,10 +29,12 @@ export const login = async (req, res) => {
             });
         }
 
+        // if successful, token generated and given
         user.accessToken = token;
 
+        // save it in base
         await user.save();
-        res.status(200).json({
+        res.status(200).json({  // for safety reasons, only the needed data from user, not all
             success: true,
             userId: user._id.toString(),
             username: user.username,
@@ -46,7 +51,7 @@ export const login = async (req, res) => {
 // validation
 export const register = async (req, res) => {
     const {username, password, repeatPassword} = req.body
-    //validate input data
+    //validate input data, e.g. # is a http special char, can casue problems if used in username
     let spChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     if (!username || spChars.test(username)) {
         res.status(400).json({
@@ -72,10 +77,11 @@ export const register = async (req, res) => {
         }).end()
         return
     }
-    // response
+    // response, return all the data to client
     res.status(200).json({username: user.username, id: user._id.toString()}).end()
 }
 
+// take username from body, delete its access token, logout happens, saves it, access token invalid -> actions impossible
 export const logout = async (req, res) => {
     try {
         const {username} = req.decoded;

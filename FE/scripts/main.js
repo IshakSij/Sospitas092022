@@ -4,9 +4,11 @@ const clearHome = () => {
     $("#cards-overview").html('')
 }
 
-// calls route,
+// calls route
 const fetchData = () => {
 
+    // collect username and all data when login, send it to backend
+    // sent in header, so backend knows user logged in
     fetch(`${baseUrl}note/get-notes/${sessionStorage.getItem('username')}`, { // send this to BE
         headers: {
             'authorization': `Bearer ${sessionStorage.getItem('accessToken')}` // send for authorization
@@ -22,18 +24,21 @@ const fetchData = () => {
             }
         })
 }
+
+// modal when newNote wanted to be created
 const confirmAddNewNote = () => {
     const title = $("#note_title").val()
     const content = $("#note_content").val()
     console.log("DATA: ", title, content)
     const username = sessionStorage.getItem('username')
+    // ajax works on frontend, forwards the requests to the backend
     $.ajax({
         url: `${baseUrl}note/add`,
         headers: {'authorization': `Bearer ${sessionStorage.getItem('accessToken')}`},
         type: 'PUT',
         data: {username, title, content},
         success: function () {
-            $(`#add_new_note`).hide()
+            $(`#add_new_note`).hide() // clear the page to update the note, with ajax so async
             $(".modal-backdrop").remove()
             clearHome()
             fetchData()
@@ -46,6 +51,9 @@ const confirmAddNewNote = () => {
 
 }
 
+
+// when changes
+// same as before, take data, send to backend...
 const confirmUpdate = (id) => {
     const username = sessionStorage.getItem('username')
     const content = $(`#update-note-text-${id}`).val()

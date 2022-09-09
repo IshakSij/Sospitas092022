@@ -1,15 +1,19 @@
 const baseUrl = 'http://localhost:3000/api/'
+
+// take data
 const login = () => {
     const username = $("#login_username").val()
     const password = $("#login_password").val()
 
-    // async
+    // async calling of backend, ajax has success and error method
     $.ajax({
         url: `${baseUrl}auth/login`,
         type: 'POST',
         data: {username, password},
         success: function (data) {
 
+            // sessionStorage active until tab closed, accessable from the page
+            // send data to start page, client side -> index
             sessionStorage.setItem('username', data.username)
             sessionStorage.setItem('userId', data.userId)
             sessionStorage.setItem('accessToken', data.token)
